@@ -1,9 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "@/public/cloud_logo.png";
+import { FcGoogle } from "react-icons/fc";
 import { auth } from "@/firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { googleAuth } from "@/utils/firebaseUtils";
+import { googleAuth, authStateChange } from "@/utils/googleAuth";
+import { createDoc } from "@/utils/firestoreUtils";
+import { useSelector, useDispatch } from "react-redux";
+import { setAuth } from "@/redux/auth/authSlice";
 
 const SignUp = ({ changeToSignin }) => {
   const init = {
@@ -14,31 +18,42 @@ const SignUp = ({ changeToSignin }) => {
   };
   const [data, setData] = useState(init);
   const [error, setError] = useState(null);
+  const [loggedin, setLoggedin] = useState(false);
+
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (data.password !== data.confirm_password) {
       setError("*Password and Confirm Password must be same!");
       return;
     }
-    (async function () {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          data.email,
-          data.password
-        );
-        const user = userCredential.user;
-        setData(init);
-      } catch (error) {
-        console.log(error.code, error.message);
-      }
-    })();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      const user = userCredential.user;
+      setData(init);
+      setLoggedin(true);
+    } catch (error) {
+      console.log(error.code, error.message);
+    }
   };
+
+  // useEffect(() => {
+  //   const user = authStateChange();
+  //   if (user) {
+  //     // // createDoc(data, user.uid);
+  //     console.log(user);
+  //   }
+  // }, [loggedin]);
 
   return (
     <form
@@ -59,7 +74,7 @@ const SignUp = ({ changeToSignin }) => {
         onChange={handleChange}
         id="username"
         placeholder="Username"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
       <input
         type="email"
@@ -68,7 +83,7 @@ const SignUp = ({ changeToSignin }) => {
         onChange={handleChange}
         id="email"
         placeholder="Email ID"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
       <input
         type="password"
@@ -77,7 +92,7 @@ const SignUp = ({ changeToSignin }) => {
         onChange={handleChange}
         id="password"
         placeholder="Password"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
       <input
         type="password"
@@ -86,7 +101,7 @@ const SignUp = ({ changeToSignin }) => {
         value={data.confirm_password}
         onChange={handleChange}
         placeholder="Confirm Password"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
       {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
 
@@ -110,9 +125,10 @@ const SignUp = ({ changeToSignin }) => {
           e.preventDefault();
           googleAuth();
         }}
-        className="bg-gray-100 text-gray-600 font-semibold p-3 w-full rounded shadow"
+        className="bg-gray-100 flex justify-center items-center gap-1 text-gray-600 font-semibold p-3 w-full rounded shadow"
       >
-        Sign Up via Google
+        <span>Sign In via </span>
+        <FcGoogle className="w-max text-2xl" />
       </button>
     </form>
   );

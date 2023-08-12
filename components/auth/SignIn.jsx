@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Logo from "@/public/cloud_logo.png";
+import { FcGoogle } from "react-icons/fc";
 import { auth } from "@/firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { googleAuth } from "@/utils/firebaseUtils";
+import { googleAuth } from "@/utils/googleAuth";
+import { readDoc } from "@/utils/firestoreUtils";
 
 const SignIn = ({ changeToSignup }) => {
   const init = {
@@ -26,7 +28,7 @@ const SignIn = ({ changeToSignup }) => {
           data.password
         );
         const user = userCredential.user;
-        console.log(user);
+        console.log(await readDoc(user.uid));
         setData(init);
       } catch (error) {
         console.log(error.code, error.message);
@@ -53,7 +55,7 @@ const SignIn = ({ changeToSignup }) => {
         onChange={handleChange}
         id="email"
         placeholder="Email ID"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
       <input
         type="password"
@@ -62,7 +64,7 @@ const SignIn = ({ changeToSignup }) => {
         onChange={handleChange}
         id="password"
         placeholder="Password"
-        className="p-3 bg-gray-100 outline-2 outline-blue-200 rounded w-full"
+        className="p-3 text-sm bg-gray-100 outline-2 outline-blue-200 rounded w-full"
       />
 
       <p className="mt-4 -mb-2 text-slate-400 text-sm">
@@ -86,9 +88,10 @@ const SignIn = ({ changeToSignup }) => {
           e.preventDefault();
           googleAuth();
         }}
-        className="bg-slate-200 text-gray-600 font-semibold p-3 w-full rounded  shadow"
+        className="bg-slate-200 flex justify-center items-center gap-1 text-gray-600 font-semibold p-3 w-full rounded  shadow"
       >
-        Sign In via Google
+        <span>Sign In via </span>
+        <FcGoogle className="w-max text-2xl" />
       </button>
     </form>
   );

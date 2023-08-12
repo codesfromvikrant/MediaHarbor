@@ -16,7 +16,7 @@ export default function Home() {
   };
   return (
     <main className="">
-      <section className="flex justify-between items-center gap-6 max-w-6xl mx-auto my-24">
+      <section className="flex justify-between items-center max-w-6xl mx-auto my-24">
         <div className="w-1/2">
           <h1 className="text-3xl text-slate-700 mb-3 font-extrabold">Elevate Your Media Experience with MediaHarbor.</h1>
           <p className="text-sm text-slate-600">
@@ -30,7 +30,7 @@ export default function Home() {
           </p>
           <button onClick={() => setIsSignIn(true)} className="bg-blue-500 text-white px-4 py-2 rounded mt-4 font-medium shadow">Login, If Registered!</button>
         </div>
-        <div className="w-1/2">
+        <div className="w-1/2 px-14">
           {isSignIn ? <SignIn changeToSignup={changeToSignup} /> : <SignUp changeToSignin={changeToSignin} />}
         </div>
       </section>
